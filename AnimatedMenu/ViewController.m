@@ -29,7 +29,7 @@
 @property (nonatomic, strong) MenuView *secondView;
 @property (nonatomic, strong) MenuView *thirdView;
 @property (nonatomic, strong) UIView *controllerView;
-
+@property (nonatomic, assign) BOOL isControllerDragged;
 
 
 @end
@@ -79,6 +79,8 @@
                    animations:^{
                      [self.controllerView setFrame:kControllerRect];
                    }completion:^(BOOL finished) {
+                     self.isControllerDragged = NO;
+
                      if(block){
                        block();
                      }
@@ -86,24 +88,31 @@
 }
 
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-  [self stopMenuAnimation];
   UITouch *touch = [[touches allObjects] objectAtIndex:0];
   CGPoint point = [touch locationInView:self.view];
   if(CGRectContainsPoint(kControllerRect, point)){
-    //    NSLog(@"detected");
+    self.isControllerDragged = YES;
     self.controllerView.center = point;
+    [self stopMenuAnimation];
+
   }
 }
 - (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+  if(!self.isControllerDragged){
+    return;
+  }
   UITouch *touch = [[touches allObjects] objectAtIndex:0];
   CGPoint point = [touch locationInView:self.view];
   self.controllerView.center = point;
-  
 }
 
 - (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
+  if(!self.isControllerDragged){
+    return;
+  }
   UITouch *touch = [[touches allObjects] objectAtIndex:0];
   CGPoint point = [touch locationInView:self.view];
+  
   if(CGRectContainsPoint(self.firstView.frame, point)){
     NSLog(@"Dropped on first menu");
   }else if(CGRectContainsPoint(self.secondView.frame, point)){
