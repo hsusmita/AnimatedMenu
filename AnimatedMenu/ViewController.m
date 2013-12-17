@@ -1,5 +1,5 @@
 //
-//  MenuView.m
+//  ViewContoller.m
 //  AnimatedMenu
 //
 //  Created by hsusmita on 17/12/13.
@@ -10,11 +10,18 @@
 
 #define kHeight 50
 #define kWidth  50
+#define kControllerHeight 80
+#define kControllerWidth  80
 
-#define kControllerRect CGRectMake(130,250,80,80)
-#define kMenuRectOne CGRectMake(140, 20, kWidth, kHeight)
-#define kMenuRectTwo CGRectMake(10, 200, kWidth, kHeight)
-#define kMenuTectThree CGRectMake(260, 200, kWidth, kHeight)
+#define kFinalVerticalDistance 130
+#define kFinalHorizontalDistance 75
+
+#define kMenuRectOne      CGRectMake(135, 20,   kWidth,   kHeight)
+#define kMenuRectTwo      CGRectMake(10, 200,   kWidth,   kHeight)
+#define kMenuTectThree    CGRectMake(260, 200,  kWidth,   kHeight)
+
+#define kControllerRect   CGRectMake(120,250,kControllerWidth,kControllerHeight)
+
 
 @interface ViewController ()
 
@@ -40,9 +47,9 @@
 - (void) setupViews{
   self.firstView = [[MenuView alloc] initWithFrame:kMenuRectOne];
   [self.view addSubview:self.firstView];
-  self.secondView = [[MenuView alloc] initWithFrame:CGRectMake(10, 200, kWidth, kHeight)];
+  self.secondView = [[MenuView alloc] initWithFrame:kMenuRectTwo];
   [self.view addSubview:self.secondView];
-  self.thirdView = [[MenuView alloc] initWithFrame:CGRectMake(260, 200, kWidth, kHeight)];
+  self.thirdView = [[MenuView alloc] initWithFrame:kMenuTectThree];
   [self.view addSubview:self.thirdView];
   self.controllerView = [[UIView alloc]initWithFrame:kControllerRect];
   [self.view addSubview:self.controllerView];
@@ -50,28 +57,32 @@
   
 }
 - (void) startMenuAnimations{
-  [self.firstView startAnimatingToPoint:CGPointMake(self.firstView.frame.origin.x, 150)];
-  [self.secondView startAnimatingToPoint:CGPointMake(120, self.secondView.frame.origin.y)];
-  [self.thirdView startAnimatingToPoint:CGPointMake(160, self.thirdView.frame.origin.y)];
+  [self.firstView startAnimatingToPoint:CGPointMake(self.firstView.frame.origin.x,
+                                                    self.firstView.frame.origin.y +
+                                                    kFinalVerticalDistance)];
+  [self.secondView startAnimatingToPoint:CGPointMake(self.secondView.frame.origin.x +
+                                                    kFinalHorizontalDistance,
+                                                    self.secondView.frame.origin.y)];
+  [self.thirdView startAnimatingToPoint:CGPointMake(self.thirdView.frame.origin.x -
+                                                    kFinalHorizontalDistance,
+                                                    self.thirdView.frame.origin.y)];
   
 }
 - (void) stopMenuAnimation{
-  [self.firstView stop];
-  [self.secondView stop];
-  [self.thirdView stop];
+  [self.firstView stopAnimating];
+  [self.secondView stopAnimating];
+  [self.thirdView stopAnimating];
   
 }
-- (void) putBackController{
-  [UIView animateWithDuration:1.0
+- (void) putBackControllerWithCompletion:(void (^)(void)) block{
+  [UIView animateWithDuration:0.8
                    animations:^{
                      [self.controllerView setFrame:kControllerRect];
+                   }completion:^(BOOL finished) {
+                     if(block){
+                       block();
+                     }
                    }];
-}
-- (IBAction)handleStop:(id)sender {
-  [self stopMenuAnimation];
-}
-- (IBAction)handleStart:(id)sender {
-  [self startMenuAnimations];
 }
 
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
@@ -99,9 +110,11 @@
     NSLog(@"Dropped on second menu");
   }else if(CGRectContainsPoint(self.thirdView.frame, point)){
     NSLog(@"Dropped on third menu");
-  }else{
-    [self putBackController];
   }
+  [self putBackControllerWithCompletion:^{
+    [self startMenuAnimations];
+  }];
+
 }
 - (void)didReceiveMemoryWarning
 {

@@ -10,6 +10,6 @@
 @interface MenuView : UIView
 
 - (void) startAnimatingToPoint:(CGPoint) point;
-- (void) stop;
+- (void) stopAnimating;
 
 @end

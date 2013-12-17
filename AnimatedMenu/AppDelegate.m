@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  AppDelegate.h
 //  AnimatedMenu
 //
 //  Created by hsusmita on 17/12/13.

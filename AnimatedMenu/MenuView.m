@@ -7,6 +7,8 @@
 
 #import "MenuView.h"
 
+#define kAnimationDuration 0.8
+
 @interface MenuView()
 
 @property (nonatomic, assign) BOOL animating;
@@ -39,42 +41,30 @@
   if(self.animating){
     return;
   }
-  if(CGRectEqualToRect(self.frame, self.initialFrame)){
     CGRect finalFrame = self.frame;
     finalFrame.origin.x = point.x;
     finalFrame.origin.y = point.y;
     self.finalFrame = finalFrame;
     [self animate];
-
-  }
-  else {
-//    NSLog(@"another animation");
-    [UIView animateWithDuration:1.0
-     
-                              animations:^{
-                                [self setFrame:self.finalFrame];
-                              } completion:^(BOOL finished) {
-                                [UIView animateWithDuration:1.0
-                                                            animations:^{
-                                                            [self setFrame:self.initialFrame];
-                                                          } completion:^(BOOL finished) {
-                                                            [self animate];
-                                                          }];
-                              }];
-  }
+}
+- (void) animateToInitialPoint{
+  [UIView animateWithDuration:0.2
+                   animations:^{
+                     [self setFrame:self.initialFrame];
+                   } completion:^(BOOL finished) {
+                   }];
 
 }
 - (void) animate{
-  [UIView animateKeyframesWithDuration:1.0
+  [UIView animateKeyframesWithDuration:kAnimationDuration
                                  delay:0.0
                                options:UIViewKeyframeAnimationOptionAutoreverse | UIViewKeyframeAnimationOptionRepeat
                             animations:^{
                               [self setFrame:self.finalFrame];
                               self.animating = YES;
                             } completion:^(BOOL finished) {
-//                              NSLog(@"moving");
                               if(finished){
-                                NSLog(@"finished");
+//                                NSLog(@"finished");
                               }
                               else{
 //                                NSLog(@"not finished");
@@ -83,10 +73,10 @@
                             }];
 }
 
-- (void) stop {
+- (void) stopAnimating {
   self.frame = [[self.layer presentationLayer] frame];
-
   [self.layer removeAllAnimations];
+  [self animateToInitialPoint];
   self.animating = NO;
 }
 
