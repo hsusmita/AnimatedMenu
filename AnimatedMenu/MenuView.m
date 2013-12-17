@@ -48,7 +48,9 @@
     [self animate];
 }
 - (void) animateToInitialPoint{
-  [UIView animateWithDuration:0.2
+  [UIView animateWithDuration:0.5
+                        delay:0.0
+                      options:UIViewAnimationOptionCurveEaseOut
                    animations:^{
                      [self setFrame:self.initialFrame];
                    } completion:^(BOOL finished) {

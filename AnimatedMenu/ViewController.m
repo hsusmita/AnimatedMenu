@@ -29,7 +29,8 @@
 @property (nonatomic, strong) MenuView *secondView;
 @property (nonatomic, strong) MenuView *thirdView;
 @property (nonatomic, strong) UIView *controllerView;
-@property (nonatomic, assign) BOOL isControllerDragged;
+@property (nonatomic, assign) BOOL isControllerBeingDragged;
+@property (nonatomic, assign) BOOL isControllerBeingReset;
 
 
 @end
@@ -54,6 +55,8 @@
   self.controllerView = [[UIView alloc]initWithFrame:kControllerRect];
   [self.view addSubview:self.controllerView];
   [self.controllerView setBackgroundColor:[UIColor blueColor]];
+  self.isControllerBeingDragged = NO;
+  self.isControllerBeingReset = NO;
   
 }
 - (void) startMenuAnimations{
@@ -68,7 +71,7 @@
                                                     self.thirdView.frame.origin.y)];
   
 }
-- (void) stopMenuAnimation{
+- (void) stopMenuAnimations{
   [self.firstView stopAnimating];
   [self.secondView stopAnimating];
   [self.thirdView stopAnimating];
@@ -76,10 +79,13 @@
 }
 - (void) putBackControllerWithCompletion:(void (^)(void)) block{
   [UIView animateWithDuration:0.8
+                        delay:0.0
+                      options:UIViewAnimationOptionCurveEaseOut
                    animations:^{
                      [self.controllerView setFrame:kControllerRect];
+                     self.isControllerBeingReset = YES;
                    }completion:^(BOOL finished) {
-                     self.isControllerDragged = NO;
+                     self.isControllerBeingReset = NO;
 
                      if(block){
                        block();
@@ -87,29 +93,34 @@
                    }];
 }
 
-- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-  UITouch *touch = [[touches allObjects] objectAtIndex:0];
-  CGPoint point = [touch locationInView:self.view];
-  if(CGRectContainsPoint(kControllerRect, point)){
-    self.isControllerDragged = YES;
-    self.controllerView.center = point;
-    [self stopMenuAnimation];
+#pragma mark - Methods to handle touch
 
+- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+  if(self.isControllerBeingDragged || self.isControllerBeingReset){
+    return;
+  }else{
+    UITouch *touch = [[touches allObjects] objectAtIndex:0];
+    CGPoint point = [touch locationInView:self.view];
+        if(CGRectContainsPoint(self.controllerView.frame, point)){
+        self.isControllerBeingDragged = YES;
+        self.controllerView.center = point;
+        [self stopMenuAnimations];
+      }
   }
 }
 - (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-  if(!self.isControllerDragged){
-    return;
+ 
+  if(self.isControllerBeingDragged){
+    UITouch *touch = [[touches allObjects] objectAtIndex:0];
+    CGPoint point = [touch locationInView:self.view];
+    self.controllerView.center = point;
   }
-  UITouch *touch = [[touches allObjects] objectAtIndex:0];
-  CGPoint point = [touch locationInView:self.view];
-  self.controllerView.center = point;
+  
 }
 
 - (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
-  if(!self.isControllerDragged){
-    return;
-  }
+
+  self.isControllerBeingDragged = NO;
   UITouch *touch = [[touches allObjects] objectAtIndex:0];
   CGPoint point = [touch locationInView:self.view];
   
