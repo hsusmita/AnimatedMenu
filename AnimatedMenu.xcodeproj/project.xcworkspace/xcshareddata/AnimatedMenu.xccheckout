@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>A87E3A52-6139-4471-930A-F0A65F773D4E</string>
+	<key>IDESourceControlProjectName</key>
+	<string>AnimatedMenu</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>A3C36FDC-A91B-4641-9498-DE50C3B88326</key>
+		<string>ssh://github.com/hsusmita/AnimatedMenu.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>AnimatedMenu.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>A3C36FDC-A91B-4641-9498-DE50C3B88326</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>ssh://github.com/hsusmita/AnimatedMenu.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>A3C36FDC-A91B-4641-9498-DE50C3B88326</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>A3C36FDC-A91B-4641-9498-DE50C3B88326</string>
+			<key>IDESourceControlWCCName</key>
+			<string>AnimatedMenu</string>
+		</dict>
+	</array>
+</dict>
+</plist>
