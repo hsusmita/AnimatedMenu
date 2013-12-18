@@ -22,6 +22,7 @@
 		6948C2D318602DEF009FEACB /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6948C2D118602DEF009FEACB /* InfoPlist.strings */; };
 		6948C2D518602DEF009FEACB /* AnimatedMenuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6948C2D418602DEF009FEACB /* AnimatedMenuTests.m */; };
 		6948C2E018602E0A009FEACB /* MenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6948C2DF18602E0A009FEACB /* MenuView.m */; };
+		6977A52018616E9D003B66E1 /* BouncyFallBehavior.m in Sources */ = {isa = PBXBuildFile; fileRef = 6977A51F18616E9D003B66E1 /* BouncyFallBehavior.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,8 @@
 		6948C2D418602DEF009FEACB /* AnimatedMenuTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AnimatedMenuTests.m; sourceTree = "<group>"; };
 		6948C2DE18602E0A009FEACB /* MenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuView.h; sourceTree = "<group>"; };
 		6948C2DF18602E0A009FEACB /* MenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuView.m; sourceTree = "<group>"; };
+		6977A51E18616E9D003B66E1 /* BouncyFallBehavior.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BouncyFallBehavior.h; sourceTree = "<group>"; };
+		6977A51F18616E9D003B66E1 /* BouncyFallBehavior.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BouncyFallBehavior.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +123,8 @@
 				6948C2BB18602DEF009FEACB /* Main.storyboard */,
 				6948C2BE18602DEF009FEACB /* ViewController.h */,
 				6948C2BF18602DEF009FEACB /* ViewController.m */,
+				6977A51E18616E9D003B66E1 /* BouncyFallBehavior.h */,
+				6977A51F18616E9D003B66E1 /* BouncyFallBehavior.m */,
 				6948C2DE18602E0A009FEACB /* MenuView.h */,
 				6948C2DF18602E0A009FEACB /* MenuView.m */,
 				6948C2C118602DEF009FEACB /* Images.xcassets */,
@@ -258,6 +263,7 @@
 				6948C2E018602E0A009FEACB /* MenuView.m in Sources */,
 				6948C2BA18602DEF009FEACB /* AppDelegate.m in Sources */,
 				6948C2B618602DEF009FEACB /* main.m in Sources */,
+				6977A52018616E9D003B66E1 /* BouncyFallBehavior.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -466,6 +472,7 @@
 				6948C2DA18602DEF009FEACB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		6948C2DB18602DEF009FEACB /* Build configuration list for PBXNativeTarget "AnimatedMenuTests" */ = {
 			isa = XCConfigurationList;
@@ -474,6 +481,7 @@
 				6948C2DD18602DEF009FEACB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

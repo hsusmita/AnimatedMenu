@@ -7,20 +7,22 @@
 
 #import "ViewController.h"
 #import "MenuView.h"
+#import "BouncyFallBehavior.h"
 
-#define kHeight 50
-#define kWidth  50
-#define kControllerHeight 80
-#define kControllerWidth  80
+#define kHeight 20
+#define kWidth  20
+#define kControllerHeight 50
+#define kControllerWidth  50
 
-#define kFinalVerticalDistance 130
+#define kFinalVerticalDistance 75
 #define kFinalHorizontalDistance 75
 
 #define kMenuRectOne      CGRectMake(135, 20,   kWidth,   kHeight)
 #define kMenuRectTwo      CGRectMake(10, 200,   kWidth,   kHeight)
 #define kMenuTectThree    CGRectMake(260, 200,  kWidth,   kHeight)
 
-#define kControllerRect   CGRectMake(120,250,kControllerWidth,kControllerHeight)
+#define kControllerRect   CGRectMake((self.view.frame.size.width - kControllerWidth)/2.0,(self.view.frame.size.height - 100), kControllerWidth, kControllerHeight)
+#define kMaxDistance      75
 
 
 @interface ViewController ()
@@ -29,8 +31,17 @@
 @property (nonatomic, strong) MenuView *secondView;
 @property (nonatomic, strong) MenuView *thirdView;
 @property (nonatomic, strong) UIView *controllerView;
+
 @property (nonatomic, assign) BOOL isControllerBeingDragged;
 @property (nonatomic, assign) BOOL isControllerBeingReset;
+
+@property (nonatomic, strong) UIDynamicAnimator *animator;
+@property (nonatomic, strong) BouncyFallBehavior *behavior;
+
+@property (nonatomic, strong) NSTimer *timer;
+@property (nonatomic, strong) NSDictionary *durationDictionary;
+@property (nonatomic, assign) int count;
+
 
 
 @end
@@ -42,7 +53,10 @@
   [super viewDidLoad];
   [self setupViews];
   [self startMenuAnimations];
-	// Do any additional setup after loading the view, typically from a nib.
+  self.animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
+  self.behavior = [[BouncyFallBehavior alloc]initWithItems:@[self.controllerView]];
+  self.count = 0;
+
 }
 
 - (void) setupViews{
@@ -52,29 +66,107 @@
   [self.view addSubview:self.secondView];
   self.thirdView = [[MenuView alloc] initWithFrame:kMenuTectThree];
   [self.view addSubview:self.thirdView];
-  self.controllerView = [[UIView alloc]initWithFrame:kControllerRect];
+  [self setupControllerView];
+  [self setupMenuViews];
+  
+  [self.firstView setAnimationDelay:0.0];
+  [self.secondView setAnimationDelay:0.5];
+  [self.thirdView setAnimationDelay:1.0];
+  
+}
+- (void) setupControllerView{
+  CGRect frame = CGRectMake((self.view.frame.size.width - kControllerWidth)/2.0,
+                            (self.view.frame.size.height - 100), kControllerWidth, kControllerHeight);
+  self.controllerView = [[UIView alloc]initWithFrame:frame];
   [self.view addSubview:self.controllerView];
+  self.controllerView.layer.cornerRadius = frame.size.height / 2.0;
   [self.controllerView setBackgroundColor:[UIColor blueColor]];
   self.isControllerBeingDragged = NO;
   self.isControllerBeingReset = NO;
-  
 }
-- (void) startMenuAnimations{
+- (void) setupMenuViews{
+  CGRect controllerFrame = self.controllerView.frame;
+  CGRect firstFrame = CGRectMake(controllerFrame.origin.x  + (controllerFrame.size.width - kWidth)/2, controllerFrame.origin.y - kFinalVerticalDistance +15, kWidth, kHeight);
+  [self.firstView setFrame:firstFrame];
+  CGRect secondFrame = CGRectMake(controllerFrame.origin.x - kFinalHorizontalDistance, controllerFrame.origin.y + (controllerFrame.size.height - kHeight)/2.0, kWidth, kHeight);
+  [self.secondView setFrame:secondFrame];
+  CGRect thirdFrame = CGRectMake(controllerFrame.origin.x + controllerFrame.size.width + kFinalHorizontalDistance - kWidth, controllerFrame.origin.y + (controllerFrame.size.height - kHeight)/2.0, kWidth, kHeight);
+  [self.thirdView setFrame:thirdFrame];
+
+}
+- (void) animate{
+  float duration1;
+  float duration2;
+  float duration3;
+  
+ if(self.count % 3 == 1){
+    duration1 = 0.6;
+    duration2 = 0.7;
+    duration3 = 0.5;
+  }else if(self.count % 3 == 2){
+    duration1 = 0.7;
+    duration2 = 0.5;
+    duration3 = 0.6;
+  }else{
+    duration1 = 0.5;
+    duration2 = 0.6;
+    duration3 = 0.7;
+
+  }
   [self.firstView startAnimatingToPoint:CGPointMake(self.firstView.frame.origin.x,
                                                     self.firstView.frame.origin.y +
-                                                    kFinalVerticalDistance)];
+                                                    kFinalVerticalDistance - 30)
+                           withDuration:duration1];
   [self.secondView startAnimatingToPoint:CGPointMake(self.secondView.frame.origin.x +
-                                                    kFinalHorizontalDistance,
-                                                    self.secondView.frame.origin.y)];
+                                                     kFinalHorizontalDistance - 15,
+                                                     self.secondView.frame.origin.y)
+                            withDuration:duration2];
   [self.thirdView startAnimatingToPoint:CGPointMake(self.thirdView.frame.origin.x -
-                                                    kFinalHorizontalDistance,
-                                                    self.thirdView.frame.origin.y)];
+                                                    kFinalHorizontalDistance + 15,
+                                                    self.thirdView.frame.origin.y)
+                           withDuration:duration3];
+  self.count ++;
+  NSLog(@"hello = %d",self.count);
+}
+- (void) shuffleDurationArray{
+//  NSUInteger count = [self count];
+//  for (NSUInteger i = 0; i < count; ++i) {
+//    // Select a random element between i and end of array to swap with.
+//    NSInteger nElements = count - i;
+//    NSInteger n = arc4random_uniform(nElements) + i;
+//    [self exchangeObjectAtIndex:i withObjectAtIndex:n];
+//  }
+}
+- (void) startMenuAnimations{
+  self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(animate) userInfo:nil repeats:YES];
+  [self.timer fire];
+  
+//  [self.firstView startOscillatingFromPoint:CGPointMake(self.controllerView.frame.origin.x  + (self.controllerView.frame.size.width - kWidth)/2,
+//                                                        self.controllerView.frame.origin.y - kFinalVerticalDistance )
+//                                    toPoint:CGPointMake(self.controllerView.frame.origin.x  + (self.controllerView.frame.size.width - kWidth)/2,
+//                                                        self.controllerView.frame.origin.y-12)
+//                                  withDelay:0.0];
+//  [self.secondView startOscillatingFromPoint:CGPointMake(self.controllerView.frame.origin.x - kFinalHorizontalDistance -12,
+//                                                         self.controllerView.frame.origin.y + (self.controllerView.frame.size.height - kHeight)/2.0)
+//                                     toPoint:CGPointMake(self.controllerView.frame.origin.x,
+//                                                         self.controllerView.frame.origin.y + (self.controllerView.frame.size.height - kHeight)/2.0)
+//                                   withDelay:0.5];
+//  [self.thirdView startOscillatingFromPoint:CGPointMake(self.controllerView.frame.origin.x + self.controllerView.frame.size.width + kFinalHorizontalDistance - kWidth + 12,
+//                                                         self.controllerView.frame.origin.y + (self.controllerView.frame.size.height - kHeight)/2.0)
+//                                     toPoint:CGPointMake( self.controllerView.frame.origin.x + self.controllerView.frame.size.width -12,
+//                                                         self.controllerView.frame.origin.y + (self.controllerView.frame.size.height - kHeight)/2.0)
+//                                  withDelay:0.5];
   
 }
 - (void) stopMenuAnimations{
+  [self.timer invalidate];
   [self.firstView stopAnimating];
   [self.secondView stopAnimating];
   [self.thirdView stopAnimating];
+  
+//  [self.firstView stopOscillating];
+//  [self.secondView stopOscillating];
+//  [self.thirdView stopOscillating];
   
 }
 - (void) putBackControllerWithCompletion:(void (^)(void)) block{
@@ -110,9 +202,13 @@
 }
 - (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
  
+  UITouch *touch = [[touches allObjects] objectAtIndex:0];
+  CGPoint point = [touch locationInView:self.view];
+  if(point.y < self.view.frame.size.height - 150){
+    return;
+  }
   if(self.isControllerBeingDragged){
-    UITouch *touch = [[touches allObjects] objectAtIndex:0];
-    CGPoint point = [touch locationInView:self.view];
+
     self.controllerView.center = point;
   }
   
@@ -120,10 +216,11 @@
 
 - (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
 
-  self.isControllerBeingDragged = NO;
   UITouch *touch = [[touches allObjects] objectAtIndex:0];
   CGPoint point = [touch locationInView:self.view];
-  
+
+  self.isControllerBeingDragged = NO;
+
   if(CGRectContainsPoint(self.firstView.frame, point)){
     NSLog(@"Dropped on first menu");
   }else if(CGRectContainsPoint(self.secondView.frame, point)){
@@ -131,8 +228,11 @@
   }else if(CGRectContainsPoint(self.thirdView.frame, point)){
     NSLog(@"Dropped on third menu");
   }
+//  [self.animator addBehavior:self.behavior];
+
   [self putBackControllerWithCompletion:^{
     [self startMenuAnimations];
+//    [self.animator removeBehavior:self.behavior];
   }];
 
 }
