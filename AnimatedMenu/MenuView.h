@@ -13,7 +13,5 @@
 
 - (void) startAnimatingToPoint:(CGPoint) point withDuration:(float) duration;
 - (void) stopAnimating;
-- (void) startOscillatingFromPoint:(CGPoint) startingPoint toPoint:(CGPoint) endingPoint withDelay:(float) delay;
-- (void) stopOscillating;
 
 @end

@@ -15,7 +15,22 @@
                     <view key="view" contentMode="scaleToFill" id="nAH-Ud-rd1">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WUP-Zn-1JB" customClass="AnimatedMenuView">
+                                <rect key="frame" x="0.0" y="368" width="320" height="200"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="200" id="tg1-DL-7qH"/>
+                                </constraints>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="SgQ-yT-Uz7" firstAttribute="top" secondItem="WUP-Zn-1JB" secondAttribute="bottom" id="FUS-A4-M0S"/>
+                            <constraint firstItem="WUP-Zn-1JB" firstAttribute="leading" secondItem="nAH-Ud-rd1" secondAttribute="leading" id="I5j-PV-gaB"/>
+                            <constraint firstAttribute="trailing" secondItem="WUP-Zn-1JB" secondAttribute="trailing" id="qJ6-SV-gfH"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="m9Y-3s-dZw" sceneMemberID="firstResponder"/>

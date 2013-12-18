@@ -1,5 +1,5 @@
 //
-//  BouncyFallBehavior.h
+//  AnimatedMenuView.h
 //  AnimatedMenu
 //
 //  Created by sah-fueled on 18/12/13.
@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BouncyFallBehavior : UIDynamicBehavior
-
-- (BouncyFallBehavior *) initWithItems : (NSArray *) items ;
+@interface AnimatedMenuView : UIView
 
 @end
