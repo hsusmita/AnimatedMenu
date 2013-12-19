@@ -6,8 +6,11 @@
 //
 
 #import "ViewController.h"
+#import "AnimatedMenuView.h"
 
-@interface ViewController ()
+@interface ViewController ()<AnimatedMenuViewProtocol>
+
+@property (nonatomic, strong) AnimatedMenuView *animatedView;
 
 @end
 
@@ -16,10 +19,31 @@
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+  self.animatedView = [[AnimatedMenuView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 200, 320, 200)];
+  [self.view addSubview:self.animatedView];
+  self.animatedView.delegate = self;
 
 }
 
-
+- (void) animatedMenuView:(AnimatedMenuView *)animatedMenuView
+     didSelectMenuAtIndex:(int)index{
+  switch(index){
+      case 0:{
+        NSLog(@"Dropped on first menu");
+        break;
+      }
+    case 1:{
+      NSLog(@"Dropped on second menu");
+      break;
+    }
+    case 2:{
+      NSLog(@"Dropped on third menu");
+      break;
+    }
+      default:
+      break;
+  }
+}
 - (void)didReceiveMemoryWarning
 {
   [super didReceiveMemoryWarning];

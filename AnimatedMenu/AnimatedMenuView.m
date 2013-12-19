@@ -2,7 +2,7 @@
 //  AnimatedMenuView.m
 //  AnimatedMenu
 //
-//  Created by sah-fueled on 18/12/13.
+//   Created by hsusmita on 18/12/13.
 //  Copyright (c) 2013 abc. All rights reserved.
 //
 
@@ -82,16 +82,21 @@
 
 - (void) setupMenuViews{
   CGRect controllerFrame = kControllerRect;
-  CGRect firstFrame = CGRectMake(controllerFrame.origin.x  + (controllerFrame.size.width - kWidth)/2, controllerFrame.origin.y - kFinalVerticalDistance, kWidth, kHeight);
+  CGRect firstFrame = CGRectMake(controllerFrame.origin.x  + (controllerFrame.size.width - kWidth)/2, controllerFrame.origin.y - [self getMaximumBouncingDistance], kWidth, kHeight);
   self.firstView = [[MenuView alloc] initWithFrame:firstFrame];
   [self addSubview:self.firstView];
-  CGRect secondFrame = CGRectMake(controllerFrame.origin.x - kFinalHorizontalDistance, controllerFrame.origin.y + (controllerFrame.size.height - kHeight)/2.0, kWidth, kHeight);
+  CGRect secondFrame = CGRectMake(controllerFrame.origin.x - [self getMaximumBouncingDistance], controllerFrame.origin.y + (controllerFrame.size.height - kHeight)/2.0, kWidth, kHeight);
   self.secondView = [[MenuView alloc] initWithFrame:secondFrame];
   [self addSubview:self.secondView];
-  CGRect thirdFrame = CGRectMake(controllerFrame.origin.x + controllerFrame.size.width + kFinalHorizontalDistance - kWidth, controllerFrame.origin.y + (controllerFrame.size.height - kHeight)/2.0, kWidth, kHeight);
+  CGRect thirdFrame = CGRectMake(controllerFrame.origin.x + controllerFrame.size.width + [self getMaximumBouncingDistance] - kWidth, controllerFrame.origin.y + (controllerFrame.size.height - kHeight)/2.0, kWidth, kHeight);
   self.thirdView = [[MenuView alloc] initWithFrame:thirdFrame];
   [self addSubview:self.thirdView];
 
+}
+- (float) getMaximumBouncingDistance{
+  float maxDistance = MIN(self.frame.size.width/2,self.frame.size.height - kControllerWidth);
+  NSLog(@"distance = %f",maxDistance);
+  return kFinalHorizontalDistance;
 }
 
 - (void) animate{
@@ -107,8 +112,7 @@
                                                     self.thirdView.frame.origin.y)
                            withDuration:[self animationDurationForMenuIndex:2]];
   self.count ++;
-  if(self.count == 2) [self.timer invalidate];
-//  NSLog(@"hello = %d",self.count);
+
 }
 
 - (float) animationDurationForMenuIndex:(int) index{
@@ -116,10 +120,12 @@
 }
 
 - (void) startMenuAnimations{
-  self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(animate) userInfo:nil repeats:YES];
+  self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0
+                                                target:self
+                                              selector:@selector(animate)
+                                              userInfo:nil
+                                               repeats:YES];
   [self.timer fire];
-  
-  
 }
 - (void) stopMenuAnimations{
   [self.timer invalidate];
@@ -146,9 +152,11 @@
 }
 
 
+
 #pragma mark - Methods to handle touch
 
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+  
   if(self.isControllerBeingDragged || self.isControllerBeingReset){
     return;
   }else{
@@ -161,6 +169,7 @@
     }
   }
 }
+
 - (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
   
   UITouch *touch = [[touches allObjects] objectAtIndex:0];
@@ -177,18 +186,20 @@
   CGPoint point = [touch locationInView:self];
   
   self.isControllerBeingDragged = NO;
-  
+  int index ;
   if(CGRectContainsPoint(self.firstView.frame, point)){
-    NSLog(@"Dropped on first menu");
+    index = 0;
   }else if(CGRectContainsPoint(self.secondView.frame, point)){
-    NSLog(@"Dropped on second menu");
+    index = 1;
   }else if(CGRectContainsPoint(self.thirdView.frame, point)){
-    NSLog(@"Dropped on third menu");
+    index = 2;
   }
-  [self putBackControllerWithCompletion:^{
-    [self startMenuAnimations];
-  }];
-  
+//  [self putBackControllerWithCompletion:^{
+//    [self startMenuAnimations];
+//  }];
+  if([self.delegate respondsToSelector:@selector(animatedMenuView:didSelectMenuAtIndex:)]){
+    [self.delegate animatedMenuView:self didSelectMenuAtIndex:index];
+  }
 }
 
 
