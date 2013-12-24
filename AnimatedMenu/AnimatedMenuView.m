@@ -9,6 +9,8 @@
 #import "AnimatedMenuView.h"
 #import "MenuView.h"
 
+#define kDefaultMenuCount 3
+
 #define kHeight 20
 #define kWidth  20
 #define kControllerHeight 50
@@ -16,6 +18,8 @@
 
 #define kFinalVerticalDistance 75
 #define kFinalHorizontalDistance 75
+
+#define kMaximumRadius 100
 
 #define kMenuRectOne      CGRectMake(135, 20,   kWidth,   kHeight)
 #define kMenuRectTwo      CGRectMake(10, 200,   kWidth,   kHeight)
@@ -41,6 +45,7 @@
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, strong) NSDictionary *durationDictionary;
 @property (nonatomic, assign) int count;
+@property (nonatomic, assign) int menuCount;
 
 @end
 
@@ -78,21 +83,39 @@
   [self.controllerView setBackgroundColor:[UIColor blueColor]];
   self.isControllerBeingDragged = NO;
   self.isControllerBeingReset = NO;
+  self.menuCount = kDefaultMenuCount;
 }
 
+- (void) addViewForAngle:(float) angle{
+ 
+}
 - (void) setupMenuViews{
-  CGRect controllerFrame = kControllerRect;
-  CGRect firstFrame = CGRectMake(controllerFrame.origin.x  + (controllerFrame.size.width - kWidth)/2, controllerFrame.origin.y - [self getMaximumBouncingDistance], kWidth, kHeight);
-  self.firstView = [[MenuView alloc] initWithFrame:firstFrame];
-  [self addSubview:self.firstView];
-  CGRect secondFrame = CGRectMake(controllerFrame.origin.x - [self getMaximumBouncingDistance], controllerFrame.origin.y + (controllerFrame.size.height - kHeight)/2.0, kWidth, kHeight);
-  self.secondView = [[MenuView alloc] initWithFrame:secondFrame];
-  [self addSubview:self.secondView];
-  CGRect thirdFrame = CGRectMake(controllerFrame.origin.x + controllerFrame.size.width + [self getMaximumBouncingDistance] - kWidth, controllerFrame.origin.y + (controllerFrame.size.height - kHeight)/2.0, kWidth, kHeight);
-  self.thirdView = [[MenuView alloc] initWithFrame:thirdFrame];
-  [self addSubview:self.thirdView];
+  CGPoint startingPoint = CGPointMake(160, self.frame.size.height - kControllerHeight/2);
+  float angle = 0;
+  float angleSpacing = M_PI / (self.menuCount - 1);
+  for(int i = 0; i < self.menuCount ; i++){
+    CGRect rect = CGRectMake(startingPoint.x + kMaximumRadius * cosf(angle + i * angleSpacing) - (kWidth / 2),
+                             startingPoint.y - kMaximumRadius * sinf(angle + i * angleSpacing) - (kHeight / 2),
+                             kWidth,
+                             kHeight);
+    
+    MenuView *view = [[MenuView alloc] initWithFrame:rect];
+    view.tag = i;
+//    NSLog(@"index = %@",view);
+
+//    UIView *lineView = [[UIView alloc]initWithFrame:CGRectMake(startingPoint.x , startingPoint.y,kMaximumRadius * cosf(angle + i * angleSpacing), 1)];
+//    [lineView setBackgroundColor:[UIColor blackColor]];
+    [self addSubview:view];
+//    [self addSubview:lineView];
+//    lineView.layer.zPosition = 10;
+//    [self insertSubview:lineView belowSubview:self.controllerView];
+//    [self insertSubview:view aboveSubview:view];
+
+
+  }
 
 }
+
 - (float) getMaximumBouncingDistance{
   float maxDistance = MIN(self.frame.size.width/2,self.frame.size.height - kControllerWidth);
   NSLog(@"distance = %f",maxDistance);
@@ -100,17 +123,16 @@
 }
 
 - (void) animate{
-  
-  [self.firstView startAnimatingToPoint:CGPointMake(self.firstView.frame.origin.x,
-                                                    self.controllerView.frame.origin.y -15)
-                           withDuration:[self animationDurationForMenuIndex:0]];
-  [self.secondView startAnimatingToPoint:CGPointMake(self.controllerView.frame.origin.x - 15,
-                                                     self.secondView.frame.origin.y )
-                            withDuration:[self animationDurationForMenuIndex:1]];
-  [self.thirdView startAnimatingToPoint:CGPointMake(self.controllerView.frame.origin.x +
-                                                    self.controllerView.frame.size.width - 5,
-                                                    self.thirdView.frame.origin.y)
-                           withDuration:[self animationDurationForMenuIndex:2]];
+  for(MenuView *menuView in self.subviews){
+    float angleSpacing = M_PI / (self.menuCount - 1);
+    float angle = menuView.tag * angleSpacing ;
+    if([menuView isKindOfClass:[MenuView class]]){
+      [menuView startAnimatingToPoint:CGPointMake(menuView.frame.origin.x - (kMaximumRadius - kControllerWidth/2 - 5) * cosf(angle) ,
+                                                  menuView.frame.origin.y + (kMaximumRadius - kControllerHeight/2 - 5)* sinf(angle))
+                         withDuration:[self animationDurationForMenuIndex:menuView.tag]];
+    }
+  }
+
   self.count ++;
 
 }
@@ -130,9 +152,11 @@
 - (void) stopMenuAnimations{
   [self.timer invalidate];
   self.count = 0;
-  [self.firstView stopAnimating];
-  [self.secondView stopAnimating];
-  [self.thirdView stopAnimating];
+  for(MenuView *menuView in self.subviews){
+    if([menuView isKindOfClass:[MenuView class]]){
+      [menuView stopAnimating];
+    }
+  }
   
 }
 - (void) putBackControllerWithCompletion:(void (^)(void)) block{
@@ -184,23 +208,31 @@
   
   UITouch *touch = [[touches allObjects] objectAtIndex:0];
   CGPoint point = [touch locationInView:self];
+  CGPoint startingPoint = CGPointMake(160, self.frame.size.height - kControllerHeight/2);
+  float angle = atanf((point.y - startingPoint.y) / (point.x - startingPoint.x));
   
+  float angleSpacing = M_PI / (self.menuCount - 1);
+  NSLog(@"angle = %f %f",angle,angleSpacing);
   self.isControllerBeingDragged = NO;
-  int index ;
-  if(CGRectContainsPoint(self.firstView.frame, point)){
-    index = 0;
-  }else if(CGRectContainsPoint(self.secondView.frame, point)){
-    index = 1;
-  }else if(CGRectContainsPoint(self.thirdView.frame, point)){
-    index = 2;
+  int index = -1 ;
+  for(MenuView *menuView in self.subviews){
+    if([menuView isKindOfClass:[MenuView class]]){
+      if(CGRectContainsPoint(menuView.frame, point) ){
+        index = menuView.tag;
+        break;
+      }
+    }
   }
-//  [self putBackControllerWithCompletion:^{
-//    [self startMenuAnimations];
-//  }];
+  [self putBackControllerWithCompletion:^{
+    [self startMenuAnimations];
+  }];
+  if(index != -1){
   if([self.delegate respondsToSelector:@selector(animatedMenuView:didSelectMenuAtIndex:)]){
     [self.delegate animatedMenuView:self didSelectMenuAtIndex:index];
   }
+  }
 }
+
 
 
 @end

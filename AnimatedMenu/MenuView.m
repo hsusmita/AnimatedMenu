@@ -49,7 +49,7 @@
     finalFrame.origin.y = point.y ;
   
     self.finalFrame = finalFrame;
-  self.initialFrame = self.frame;
+    self.initialFrame = self.frame;
     [self animate];
 }
 
