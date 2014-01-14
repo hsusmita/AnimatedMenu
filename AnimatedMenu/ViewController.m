@@ -22,6 +22,12 @@
   self.animatedView = [[AnimatedMenuView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 200, 320, 200)];
   [self.view addSubview:self.animatedView];
   self.animatedView.delegate = self;
+  CATransition *animation = [CATransition animation];
+  [animation setDelegate:self];
+  [animation setDuration:2.0f];
+  [animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+  [animation setType:@"rippleEffect" ];
+  [self.animatedView.layer addAnimation:animation forKey:NULL];
 
 }
 

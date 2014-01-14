@@ -2,7 +2,7 @@
 //  AnimatedMenuView.m
 //  AnimatedMenu
 //
-//   Created by hsusmita on 18/12/13.
+//  Created by hsusmita on 18/12/13.
 //  Copyright (c) 2013 abc. All rights reserved.
 //
 
@@ -21,10 +21,6 @@
 
 #define kMaximumRadius 100
 
-#define kMenuRectOne      CGRectMake(135, 20,   kWidth,   kHeight)
-#define kMenuRectTwo      CGRectMake(10, 200,   kWidth,   kHeight)
-#define kMenuTectThree    CGRectMake(260, 200,  kWidth,   kHeight)
-
 #define kControllerRect   CGRectMake((self.frame.size.width - kControllerWidth)/2.0,(self.frame.size.height - kControllerHeight), kControllerWidth, kControllerHeight)
 
 #define kAnimateDurationBasic     0.5
@@ -32,18 +28,12 @@
 
 @interface AnimatedMenuView ()
 
-@property (nonatomic, strong) MenuView *firstView;
-@property (nonatomic, strong) MenuView *secondView;
-@property (nonatomic, strong) MenuView *thirdView;
 @property (nonatomic, strong) UIView *controllerView;
 
 @property (nonatomic, assign) BOOL isControllerBeingDragged;
 @property (nonatomic, assign) BOOL isControllerBeingReset;
 
-@property (nonatomic, strong) UIDynamicAnimator *animator;
-
 @property (nonatomic, strong) NSTimer *timer;
-@property (nonatomic, strong) NSDictionary *durationDictionary;
 @property (nonatomic, assign) int count;
 @property (nonatomic, assign) int menuCount;
 
@@ -94,26 +84,21 @@
   float angle = 0;
   float angleSpacing = M_PI / (self.menuCount - 1);
   for(int i = 0; i < self.menuCount ; i++){
-    CGRect rect = CGRectMake(startingPoint.x + kMaximumRadius * cosf(angle + i * angleSpacing) - (kWidth / 2),
-                             startingPoint.y - kMaximumRadius * sinf(angle + i * angleSpacing) - (kHeight / 2),
+    float posX = startingPoint.x
+                 + kMaximumRadius * cosf(angle + i * angleSpacing)
+                 - (kWidth / 2);
+    float posY = startingPoint.y
+                 - kMaximumRadius * sinf(angle + i * angleSpacing)
+                 - (kHeight / 2);
+    CGRect rect = CGRectMake(posX,
+                             posY,
                              kWidth,
                              kHeight);
     
     MenuView *view = [[MenuView alloc] initWithFrame:rect];
     view.tag = i;
-//    NSLog(@"index = %@",view);
-
-//    UIView *lineView = [[UIView alloc]initWithFrame:CGRectMake(startingPoint.x , startingPoint.y,kMaximumRadius * cosf(angle + i * angleSpacing), 1)];
-//    [lineView setBackgroundColor:[UIColor blackColor]];
     [self addSubview:view];
-//    [self addSubview:lineView];
-//    lineView.layer.zPosition = 10;
-//    [self insertSubview:lineView belowSubview:self.controllerView];
-//    [self insertSubview:view aboveSubview:view];
-
-
   }
-
 }
 
 - (float) getMaximumBouncingDistance{
@@ -126,19 +111,22 @@
   for(MenuView *menuView in self.subviews){
     float angleSpacing = M_PI / (self.menuCount - 1);
     float angle = menuView.tag * angleSpacing ;
+    float posX = menuView.frame.origin.x
+                 - (kMaximumRadius - kControllerWidth/2 - 5) * cosf(angle);
+    float posY = menuView.frame.origin.y
+                 + (kMaximumRadius - kControllerHeight/2 - 5)* sinf(angle);
     if([menuView isKindOfClass:[MenuView class]]){
-      [menuView startAnimatingToPoint:CGPointMake(menuView.frame.origin.x - (kMaximumRadius - kControllerWidth/2 - 5) * cosf(angle) ,
-                                                  menuView.frame.origin.y + (kMaximumRadius - kControllerHeight/2 - 5)* sinf(angle))
+      [menuView startAnimatingToPoint:CGPointMake(posX,posY)
                          withDuration:[self animationDurationForMenuIndex:menuView.tag]];
     }
   }
-
   self.count ++;
 
 }
 
 - (float) animationDurationForMenuIndex:(int) index{
-  return (kAnimateDurationBasic + ((self.count + index) % 3) * kDifferenceFactor);
+  return (kAnimateDurationBasic +
+         ((self.count + index) % kDefaultMenuCount) * kDifferenceFactor);
 }
 
 - (void) startMenuAnimations{
